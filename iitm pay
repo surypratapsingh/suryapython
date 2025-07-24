@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IITM Pay - Secure Unified Campus Payment Ecosystem</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        :root {
+            --primary: #0056b3;
+            --secondary: #003d82;
+            --accent: #00c853;
+            --light: #f0f7ff;
+            --dark: #001f3f;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        nav a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: var(--transition);
+        }
+        
+        nav a:hover:after {
+            width: 100%;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(0, 30, 63, 0.9), rgba(0, 30, 63, 0.95)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23001f3f"/><path d="M0 50 L100 50 M50 0 L50 100" stroke="%230056b3" stroke-width="1" stroke-opacity="0.1"/></svg>');
+            color: var(--white);
+            padding: 6rem 5% 4rem;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--dark);
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            margin: 0.5rem;
+            border: 2px solid var(--accent);
+            cursor: pointer;
+        }
+        
+        .cta-button:hover {
+            background: transparent;
+            color: var(--accent);
+            transform: translateY(-3px);
+        }
+        
+        .cta-button.secondary {
+            background: transparent;
+            border: 2px solid var(--white);
+            color: var(--white);
+        }
+        
+        .cta-button.secondary:hover {
+            background: var(--white);
+            color: var(--dark);
+        }
+        
+        section {
+            padding: 5rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-header h2:after {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 4px;
+            background: var(--accent);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        
+        .section-header p {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 1rem auto 0;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .feature-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 1px solid var(--light-gray);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .feature-card p {
+            color: var(--gray);
+        }
+        
+        .diagram-container {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin: 3rem auto;
+            max-width: 900px;
+            border: 1px solid var(--light-gray);
+        }
+        
+        .diagram {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(135deg, #f5f9ff, #e6f0ff);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .qr-code {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: 
+                linear-gradient(45deg, #001f3f 25%, transparent 25%, transparent 75%, #001f3f 75%),
+                linear-gradient(45deg, #001f3f 25%, transparent 25%, transparent 75%, #001f3f 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            border: 10px solid var(--white);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            animation: pulse 2s infinite;
+        }
+        
+        .qr-code:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+        
+        .device {
+            position: absolute;
+            width: 180px;
+            height: 350px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .device-top {
+            background: var(--primary);
+            height: 30px;
+            border-radius: 10px 10px 0 0;
+            margin: -15px -15px 10px -15px;
+            position: relative;
+        }
+        
+        .device-content {
+            flex: 1;
+            background: var(--light);
+            border-radius: 8px;
+            padding: 10px;
+            overflow: hidden;
+        }
+        
+        .device-student {
+            top: 50px;
+            left: 10%;
+        }
+        
+        .device-merchant {
+            top: 50px;
+            right: 10%;
+        }
+        
+        .device-admin {
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 250px;
+            width: 300px;
+        }
+        
+        .device-admin .device-content {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .dashboard-item {
+            background: var(--white);
+            border-radius: 5px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 0.8rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dashboard-item i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+        
+        .data-flow {
+            position: absolute;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+            animation: flow 3s infinite;
+        }
+        
+        .flow-1 {
+            top: 40%;
+            left: 28%;
+            width: 24%;
+            animation-delay: 0s;
+        }
+        
+        .flow-2 {
+            top: 40%;
+            left: 52%;
+            width: 24%;
+            animation-delay: 0.5s;
+        }
+        
+        .flow-3 {
+            top: 70%;
+            left: 40%;
+            width: 20%;
+            transform: rotate(90deg);
+            animation-delay: 1s;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            min-width: 800px;
+        }
+        
+        th {
+            background: var(--primary);
+            color: var(--white);
+            text-align: left;
+            padding: 1rem;
+        }
+        
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        tr:nth-child(even) {
+            background-color: rgba(0, 86, 179, 0.03);
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 200, 83, 0.05);
+        }
+        
+        .roadmap {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .phase-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            border-top: 4px solid var(--accent);
+            overflow: hidden;
+        }
+        
+        .phase-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+        }
+        
+        .phase-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .phase-card .phase-number {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .tech-item {
+            background: var(--white);
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .tech-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tech-item i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .tech-item span {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            padding: 4rem 5% 2rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+        
+        .footer-section h3:after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+            bottom: 0;
+            left: 0;
+        }
+        
+        .footer-section p {
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: var(--white);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--accent);
+        }
+        
+        .footer-links i {
+            font-size: 0.8rem;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding: 2rem 0 1rem;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 3rem;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 200, 83, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0); }
+        }
+        
+        @keyframes flow {
+            0% { width: 0; opacity: 0; }
+            30% { opacity: 1; }
+            100% { width: 100%; opacity: 0; }
+        }
+        
+        /* Wallet Demo Section */
+        .wallet-demo {
+            background: linear-gradient(135deg, #f0f7ff, #e1edff);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            margin: 4rem auto;
+            max-width: 800px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--light-gray);
+        }
+        
+        .wallet-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            max-width: 500px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+        
+        .wallet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .wallet-balance {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 1rem 0;
+        }
+        
+        .wallet-id {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        
+        .amount-options {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .amount-option {
+            background: var(--light);
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            padding: 1rem;
+            min-width: 100px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .amount-option:hover, .amount-option.selected {
+            border-color: var(--accent);
+            background: rgba(0, 200, 83, 0.1);
+        }
+        
+        .amount-option.selected {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 200, 83, 0.2);
+        }
+        
+        .amount-option .amount {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+        
+        .amount-option .label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 0.5rem;
+        }
+        
+        .custom-amount {
+            margin: 2rem 0;
+        }
+        
+        .custom-amount input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .custom-amount input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .payment-methods {
+            margin: 2rem 0;
+            text-align: left;
+        }
+        
+        .payment-method {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .payment-method:hover, .payment-method.selected {
+            border-color: var(--primary);
+            background: rgba(0, 86, 179, 0.05);
+        }
+        
+        .payment-method.selected {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0, 86, 179, 0.1);
+        }
+        
+        .payment-method i {
+            font-size: 1.8rem;
+            margin-right: 1rem;
+            color: var(--primary);
+        }
+        
+        .payment-method .details {
+            flex: 1;
+        }
+        
+        .payment-method .details h4 {
+            margin-bottom: 0.3rem;
+        }
+        
+        .payment-method .details p {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .razorpay-logo {
+            width: 120px;
+            margin: 1rem auto;
+            display: block;
+        }
+        
+        .payment-success {
+            display: none;
+            background: rgba(0, 200, 83, 0.1);
+            border: 2px solid var(--accent);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .payment-success i {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+            
+            .device {
+                transform: scale(0.8);
+            }
+            
+            .device-student {
+                left: 0;
+            }
+            
+            .device-merchant {
+                right: 0;
+            }
+            
+            .device-admin {
+                transform: translateX(-50%) scale(0.8);
+            }
+            
+            .wallet-demo {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>IITM Pay</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#vision">Vision</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#payment">Add Money</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="#security">Security</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>A Secure, Unified Campus Payment Ecosystem</h2>
+            <p>IITM Pay is a next-generation digital payment system designed exclusively for the Indian Institute of Technology Madras, creating a frictionless, secure, and self-contained campus economy.</p>
+            <div>
+                <a href="#payment" class="cta-button">Add Money to Wallet</a>
+                <a href="#features" class="cta-button secondary">Explore Features</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section id="vision">
+        <div class="section-header">
+            <h2>The IITM Pay Vision</h2>
+            <p>Transforming campus transactions with security and convenience</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <i class="fas fa-wallet"></i>
+                <h3>Unified Campus Wallet</h3>
+                <p>A centralized, pre-funded digital wallet serving as the single payment point for all on-campus goods and services. Simplifies financial management for students and eliminates the need for multiple payment methods.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-qrcode"></i>
+                <h3>Live Ticket QR Code</h3>
+                <p>A dynamic, cryptographically secured QR code for each transaction. Serves as both unforgeable receipt and secure digital token for event access, eliminating fake payment screenshots.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Zero-Fraud Payment UI</h3>
+                <p>Designed from the ground up with security as the core principle. Proactive countermeasures against phishing, quishing, and social engineering attacks prevalent in today's payment landscape.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Demo Section -->
+    <section id="payment">
+        <div class="section-header">
+            <h2>Add Money to Wallet</h2>
+            <p>Securely fund your IITM Pay wallet using Razorpay payment gateway</p>
+        </div>
+        
+        <div class="wallet-demo">
+            <div class="wallet-card">
+                <div class="wallet-header">
+                    <h3>IITM Pay Wallet</h3>
+                    <div class="wallet-id">ID: CS20B001</div>
+                </div>
+                
+                <div class="wallet-balance">₹2,500</div>
+                <p>Current Balance</p>
+                
+                <div class="amount-options">
+                    <div class="amount-option" data-amount="1000">
+                        <div class="amount">₹1,000</div>
+                        <div class="label">Basic</div>
+                    </div>
+                    <div class="amount-option selected" data-amount="2500">
+                        <div class="amount">₹2,500</div>
+                        <div class="label">Recommended</div>
+                    </div>
+                    <div class="amount-option" data-amount="5000">
+                        <div class="amount">₹5,000</div>
+                        <div class="label">Premium</div>
+                    </div>
+                </div>
+                
+                <div class="custom-amount">
+                    <input type="number" id="customAmount" placeholder="Or enter custom amount (₹)">
+                </div>
+                
+                <div class="payment-methods">
+                    <h4>Select Payment Method</h4>
+                    
+                    <div class="payment-method selected">
+                        <i class="fas fa-credit-card"></i>
+                        <div class="details">
+                            <h4>Credit/Debit Card</h4>
+                            <p>Visa, Mastercard, RuPay, Amex</p>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-method">
+                        <i class="fas fa-university"></i>
+                        <div class="details">
+                            <h4>Net Banking</h4>
+                            <p>All major Indian banks</p>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-method">
+                        <i class="fas fa-wallet"></i>
+                        <div class="details">
+                            <h4>UPI</h4>
+                            <p>Google Pay, PhonePe, Paytm</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <img src="https://razorpay.com/assets/razorpay-glyph.svg" alt="Razorpay" class="razorpay-logo">
+                <p style="color: var(--gray); font-size: 0.9rem; margin: 1rem 0;">Secure payments powered by Razorpay</p>
+                
+                <button class="cta-button" id="payNowBtn">Pay Now Securely</button>
+                
+                <div class="payment-success" id="paymentSuccess">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Payment Successful!</h3>
+                    <p>₹2,500 has been added to your IITM Pay wallet</p>
+                    <p>Transaction ID: TXN_IITMPAY_20250725_123456</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" style="background: #f8fbff;">
+        <div class="section-header">
+            <h2>Core Features</h2>
+            <p>Innovative solutions for campus financial needs</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <i class="fas fa-user-check"></i>
+                <h3>Secure Onboarding</h3>
+                <p>Single Sign-On with college email, biometric authentication, and simplified KYC process integrated with Student Information System.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-sync-alt"></i>
+                <h3>Real-time Reconciliation</h3>
+                <p>Automated financial reconciliation with deep integration to existing campus systems, reducing administrative overhead.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>Intuitive Mobile App</h3>
+                <p>Clean, minimalist interface designed to reduce cognitive load while prioritizing security at every interaction point.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-ticket-alt"></i>
+                <h3>Event Management</h3>
+                <p>Integrated solution for fest entry management with secure digital tickets and real-time attendance tracking.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Administrative Dashboard</h3>
+                <p>Comprehensive analytics and management tools for campus administrators with real-time transaction monitoring.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-expand-arrows-alt"></i>
+                <h3>Scalable Architecture</h3>
+                <p>Designed for multi-institutional deployment with modular integration framework for diverse campus systems.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture">
+        <div class="section-header">
+            <h2>System Architecture</h2>
+            <p>Integrated ecosystem for seamless campus transactions</p>
+        </div>
+        
+        <div class="diagram-container">
+            <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--secondary);">IITM Pay Transaction Flow</h3>
+            <div class="diagram">
+                <div class="device device-student">
+                    <div class="device-top"></div>
+                    <div class="device-content">
+                        <div style="background: var(--white); border-radius: 8px; padding: 10px; height: 100%;">
+                            <div style="display: flex; flex-direction: column; height: 100%;">
+                                <div style="text-align: center; font-weight: 600; margin-bottom: 15px;">IITM Pay</div>
+                                <div style="background: var(--primary); color: white; padding: 10px; border-radius: 8px; text-align: center; margin-bottom: 15px;">Wallet: ₹2,500</div>
+                                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                                    <div style="width: 100px; height: 100px; background: 
+                                        linear-gradient(45deg, #003d82 25%, transparent 25%, transparent 75%, #003d82 75%),
+                                        linear-gradient(45deg, #003d82 25%, transparent 25%, transparent 75%, #003d82 75%);
+                                        background-size: 20px 20px;
+                                        background-position: 0 0, 10px 10px; margin-bottom: 15px;"></div>
+                                    <div style="font-size: 0.8rem;">Scanning QR Code...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="device device-merchant">
+                    <div class="device-top"></div>
+                    <div class="device-content">
+                        <div style="background: var(--white); border-radius: 8px; padding: 10px; height: 100%;">
+                            <div style="display: flex; flex-direction: column; height: 100%;">
+                                <div style="text-align: center; font-weight: 600; margin-bottom: 15px;">Merchant Terminal</div>
+                                <div style="text-align: center; margin-bottom: 10px; font-size: 1.2rem;">₹750.00</div>
+                                <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                                    <div class="qr-code"></div>
+                                </div>
+                                <div style="text-align: center; font-size: 0.8rem; margin-top: 10px;">Saarang Merchandise</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="device device-admin">
+                    <div class="device-top"></div>
+                    <div class="device-content">
+                        <div style="background: var(--white); border-radius: 8px; padding: 10px; height: 100%;">
+                            <div style="font-weight: 600; margin-bottom: 10px; text-align: center;">Admin Dashboard</div>
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; height: calc(100% - 30px);">
+                                <div class="dashboard-item"><i class="fas fa-sync"></i> Real-time Transactions</div>
+                                <div class="dashboard-item"><i class="fas fa-user-shield"></i> User Management</div>
+                                <div class="dashboard-item"><i class="fas fa-file-invoice"></i> Reconciliation</div>
+                                <div class="dashboard-item"><i class="fas fa-calendar-check"></i> Event Management</div>
+                                <div class="dashboard-item"><i class="fas fa-chart-pie"></i> Analytics</div>
+                                <div class="dashboard-item"><i class="fas fa-bell"></i> Notifications</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="data-flow flow-1"></div>
+                <div class="data-flow flow-2"></div>
+                <div class="data-flow flow-3"></div>
+            </div>
+        </div>
+        
+        <div class="features" style="margin-top: 3rem;">
+            <div class="feature-card">
+                <i class="fas fa-database"></i>
+                <h3>Backend Architecture</h3>
+                <p>Python-based microservices with Django framework, PostgreSQL database, and Redis caching. Containerized deployment with Docker and Kubernetes.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-mobile"></i>
+                <h3>Mobile Application</h3>
+                <p>Cross-platform React Native app for iOS and Android with optimized performance and security-first design principles.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-plug"></i>
+                <h3>System Integration</h3>
+                <p>RESTful APIs for seamless integration with MasterSoft SIS, Digiicampus, and other campus systems.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Section -->
+    <section id="security" style="background: #f8fbff;">
+        <div class="section-header">
+            <h2>Security Framework</h2>
+            <p>Proactive countermeasures against modern fraud threats</p>
+        </div>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fraud Vector</th>
+                        <th>Description</th>
+                        <th>IITM Pay Countermeasure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Fake Payment Screenshots</td>
+                        <td>User edits a static screenshot to show fake payment confirmation</td>
+                        <td>Dynamic "Live Receipt" with animations and watermarking</td>
+                    </tr>
+                    <tr>
+                        <td>Malicious QR Codes</td>
+                        <td>Scammers trick users into scanning payment-initiating QR codes</td>
+                        <td>Explicit confirmation screen with payment details before authorization</td>
+                    </tr>
+                    <tr>
+                        <td>Phishing/Smishing</td>
+                        <td>Fake communications to steal login credentials</td>
+                        <td>In-app notifications only, consistent UI branding, user education</td>
+                    </tr>
+                    <tr>
+                        <td>Money Muling</td>
+                        <td>Students tricked into laundering money through their accounts</td>
+                        <td>Closed-loop system with velocity checks and AI monitoring</td>
+                    </tr>
+                    <tr>
+                        <td>Credential Theft</td>
+                        <td>Stolen login credentials used for unauthorized access</td>
+                        <td>Biometric authentication, short-lived JWT tokens, device management</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="features" style="margin-top: 3rem;">
+            <div class="feature-card">
+                <i class="fas fa-lock"></i>
+                <h3>Cryptographic Security</h3>
+                <p>JWT tokens with ECDSA signatures, AES-256 encryption, and Hardware Security Modules for key management.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-user-lock"></i>
+                <h3>Authentication</h3>
+                <p>Multi-factor authentication with biometrics, PIN, and college SSO integration.</p>
+            </div>
+            
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3>AI Monitoring</h3>
+                <p>Real-time anomaly detection for suspicious transaction patterns and behaviors.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>IITM Pay</h3>
+                <p>A next-generation digital payment ecosystem designed exclusively for IIT Madras, creating a frictionless, secure campus economy.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="#vision"><i class="fas fa-chevron-right"></i> Vision</a></li>
+                    <li><a href="#features"><i class="fas fa-chevron-right"></i> Features</a></li>
+                    <li><a href="#payment"><i class="fas fa-chevron-right"></i> Add Money</a></li>
+                    <li><a href="#architecture"><i class="fas fa-chevron-right"></i> Architecture</a></li>
+                    <li><a href="#security"><i class="fas fa-chevron-right"></i> Security</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-map-marker-alt"></i> IIT Madras, Chennai, Tamil Nadu</p>
+                <p><i class="fas fa-envelope"></i> contact@iitmpay.edu.in</p>
+                <p><i class="fas fa-phone"></i> +91 44 2257 8000</p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 IITM Pay. All rights reserved. A project of Indian Institute of Technology Madras.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Amount selection
+        const amountOptions = document.querySelectorAll('.amount-option');
+        const customAmountInput = document.getElementById('customAmount');
+        let selectedAmount = 2500;
+        
+        amountOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                amountOptions.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedAmount = parseInt(option.dataset.amount);
+                customAmountInput.value = '';
+            });
+        });
+        
+        customAmountInput.addEventListener('input', () => {
+            if (customAmountInput.value) {
+                amountOptions.forEach(o => o.classList.remove('selected'));
+                selectedAmount = parseInt(customAmountInput.value) || 0;
+            }
+        });
+        
+        // Payment method selection
+        const paymentMethods = document.querySelectorAll('.payment-method');
+        
+        paymentMethods.forEach(method => {
+            method.addEventListener('click', () => {
+                paymentMethods.forEach(m => m.classList.remove('selected'));
+                method.classList.add('selected');
+            });
+        });
+        
+        // Razorpay payment integration
+        document.getElementById('payNowBtn').addEventListener('click', () => {
+            // Get selected payment method
+            const selectedMethod = document.querySelector('.payment-method.selected h4').textContent;
+            
+            // In a real application, this would be generated server-side
+            const options = {
+                key: "rzp_test_1DP5mmOlF5G5ag", // Test API Key
+                amount: selectedAmount * 100, // Amount in paise
+                currency: "INR",
+                name: "IITM Pay Wallet",
+                description: "Add money to campus wallet",
+                image: "https://i.ibb.co/0X2T0d3/iitm-pay-logo.png",
+                handler: function(response) {
+                    // This function runs after successful payment
+                    document.getElementById('paymentSuccess').style.display = 'block';
+                    document.getElementById('paymentSuccess').querySelector('p:nth-child(4)').textContent = 
+                        ₹${selectedAmount.toLocaleString()} has been added to your IITM Pay wallet;
+                    
+                    // Update wallet balance (in demo only)
+                    const balanceElement = document.querySelector('.wallet-balance');
+                    const currentBalance = parseInt(balanceElement.textContent.replace('₹', '').replace(',', ''));
+                    const newBalance = currentBalance + selectedAmount;
+                    balanceElement.textContent = ₹${newBalance.toLocaleString()};
+                    
+                    // Scroll to success message
+                    document.getElementById('paymentSuccess').scrollIntoView({ behavior: 'smooth' });
+                },
+                prefill: {
+                    name: "Student Name",
+                    email: "student@smail.iitm.ac.in",
+                    contact: "+919876543210"
+                },
+                notes: {
+                    address: "IIT Madras Campus"
+                },
+                theme: {
+                    color: "#0056b3"
+                }
+            };
+            
+            // Create Razorpay instance and open payment modal
+            const rzp = new Razorpay(options);
+            rzp.open();
+            
+            // Handle payment errors
+            rzp.on('payment.failed', function(response) {
+                alert(Payment failed: ${response.error.description});
+            });
+        });
+        
+        // Simple animation on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        document.querySelectorAll('.feature-card, .phase-card, .tech-item').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>
